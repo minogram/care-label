@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>의류 취급표시 생성기</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better readability */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light background */
+        }
+        /* Style for SVG icons */
+        .care-icon svg {
+            width: 60px; /* Larger icons */
+            height: 60px;
+            fill: currentColor; /* Use text color for icons */
+            stroke: currentColor;
+            stroke-width: 2;
+            border: 2px solid #cbd5e1; /* Light border around icons */
+            border-radius: 8px; /* Rounded corners for icons */
+            padding: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl border border-gray-200">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">👕 의류 취급표시 생성기</h1>
+
+        <!-- Input Section -->
+        <div class="mb-8">
+            <p class="text-lg font-semibold text-gray-700 mb-4">의류 정보를 입력해주세요:</p>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    소재 선택:
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <label class="inline-flex items-center bg-blue-50 text-blue-800 px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-100 transition duration-200">
+                        <input type="checkbox" name="material" value="cotton" class="form-checkbox h-5 w-5 text-blue-600 rounded-md focus:ring-blue-500">
+                        <span class="ml-2 text-sm font-medium">면 (Cotton)</span>
+                    </label>
+                    <label class="inline-flex items-center bg-purple-50 text-purple-800 px-4 py-2 rounded-lg cursor-pointer hover:bg-purple-100 transition duration-200">
+                        <input type="checkbox" name="material" value="polyester" class="form-checkbox h-5 w-5 text-purple-600 rounded-md focus:ring-purple-500">
+                        <span class="ml-2 text-sm font-medium">폴리에스터/나일론</span>
+                    </label>
+                    <label class="inline-flex items-center bg-green-50 text-green-800 px-4 py-2 rounded-lg cursor-pointer hover:bg-green-100 transition duration-200">
+                        <input type="checkbox" name="material" value="wool_silk" class="form-checkbox h-5 w-5 text-green-600 rounded-md focus:ring-green-500">
+                        <span class="ml-2 text-sm font-medium">울/실크</span>
+                    </label>
+                    <label class="inline-flex items-center bg-red-50 text-red-800 px-4 py-2 rounded-lg cursor-pointer hover:bg-red-100 transition duration-200">
+                        <input type="checkbox" name="material" value="delicate" class="form-checkbox h-5 w-5 text-red-600 rounded-md focus:ring-red-500">
+                        <span class="ml-2 text-sm font-medium">섬세한 소재 (레이스, 비즈 등)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">
+                    추가 설명 (예: 색상, 특징 등):
+                </label>
+                <textarea id="description" rows="3" class="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="예: 밝은 색상, 어두운 색상, 장식이 많음"></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label for="imageUpload" class="block text-gray-700 text-sm font-bold mb-2">
+                    의류 이미지 업로드 (선택 사항):
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200">
+                <div id="imagePreview" class="mt-4 flex justify-center items-center h-48 bg-gray-100 rounded-lg overflow-hidden border border-dashed border-gray-300 hidden">
+                    <img src="" alt="Image Preview" class="max-h-full max-w-full object-contain">
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    * 이미지 분석을 통한 자동 취급표시 생성은 현재 지원되지 않습니다. (향후 기능 확장 예정)
+                </p>
+            </div>
+
+            <button id="generateBtn" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">
+                취급표시 생성하기
+            </button>
+        </div>
+
+        <!-- Output Section -->
+        <div id="outputSection" class="hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">✨ 생성된 취급표시</h2>
+            <div id="careSymbols" class="flex flex-wrap justify-center gap-4 mb-6">
+                <!-- Care symbols will be injected here -->
+            </div>
+            <div id="careExplanations" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-700 mb-3">설명:</h3>
+                <ul class="list-disc list-inside text-gray-600 space-y-2">
+                    <!-- Explanations will be injected here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define care symbols and their SVG paths and descriptions
+        const careSymbols = {
+            // Washing
+            wash_machine_40: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><path d="M20 30 L80 30 L80 70 L20 70 Z" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="15" fill="none" stroke="#333" stroke-width="5"/><path d="M40 85 L35 90 L65 90 L60 85" fill="none" stroke="#333" stroke-width="5"/><text x="50" y="60" font-family="Arial" font-size="20" text-anchor="middle" fill="#333">40</text></svg>`,
+                desc: "물 온도 40°C로 기계 세탁 가능 (표준 코스)"
+            },
+            wash_machine_30: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><path d="M20 30 L80 30 L80 70 L20 70 Z" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="15" fill="none" stroke="#333" stroke-width="5"/><path d="M40 85 L35 90 L65 90 L60 85" fill="none" stroke="#333" stroke-width="5"/><text x="50" y="60" font-family="Arial" font-size="20" text-anchor="middle" fill="#333">30</text></svg>`,
+                desc: "물 온도 30°C로 기계 세탁 가능 (약한 코스)"
+            },
+            wash_hand: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><path d="M20 30 L80 30 L80 70 L20 70 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M45 40 Q50 30 55 40 Q60 50 55 60 Q50 70 45 60 Q40 50 45 40 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M35 50 L40 55 M60 50 L55 55" fill="none" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "손세탁 가능"
+            },
+            wash_none: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><path d="M20 30 L80 30 L80 70 L20 70 Z" fill="none" stroke="#333" stroke-width="5"/><line x1="15" y1="15" x2="85" y2="85" stroke="#333" stroke-width="5"/><line x1="85" y1="15" x2="15" y2="85" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "물세탁 금지"
+            },
+            // Bleaching
+            bleach_any: {
+                svg: `<svg viewBox="0 0 100 100"><polygon points="50 10 90 90 10 90" fill="none" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "모든 종류의 표백제 사용 가능"
+            },
+            bleach_non_chlorine: {
+                svg: `<svg viewBox="0 0 100 100"><polygon points="50 10 90 90 10 90" fill="none" stroke="#333" stroke-width="5"/><line x1="30" y1="50" x2="70" y2="50" stroke="#333" stroke-width="5"/><line x1="30" y1="65" x2="70" y2="65" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "염소계 표백제 사용 금지 (산소계 표백제 가능)"
+            },
+            bleach_none: {
+                svg: `<svg viewBox="0 0 100 100"><polygon points="50 10 90 90 10 90" fill="none" stroke="#333" stroke-width="5"/><line x1="15" y1="15" x2="85" y2="85" stroke="#333" stroke-width="5"/><line x1="85" y1="15" x2="15" y2="85" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "표백 금지"
+            },
+            // Drying
+            dry_tumble_normal: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "기계 건조 가능 (표준 코스)"
+            },
+            dry_tumble_low: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="5" fill="#333"/></svg>`,
+                desc: "기계 건조 가능 (낮은 온도)"
+            },
+            dry_tumble_none: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#333" stroke-width="5"/><line x1="15" y1="15" x2="85" y2="85" stroke="#333" stroke-width="5"/><line x1="85" y1="15" x2="15" y2="85" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "기계 건조 금지"
+            },
+            dry_line: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><line x1="10" y1="20" x2="90" y2="20" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "옷걸이에 걸어 건조"
+            },
+            dry_flat: {
+                svg: `<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" rx="10" ry="10" fill="none" stroke="#333" stroke-width="5"/><line x1="20" y1="50" x2="80" y2="50" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "평평하게 펴서 건조"
+            },
+            // Ironing
+            iron_high: {
+                svg: `<svg viewBox="0 0 100 100"><path d="M15 85 L15 35 L50 10 L85 35 L85 85 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M20 85 L80 85" fill="none" stroke="#333" stroke-width="5"/><circle cx="30" cy="65" r="5" fill="#333"/><circle cx="50" cy="65" r="5" fill="#333"/><circle cx="70" cy="65" r="5" fill="#333"/></svg>`,
+                desc: "고온으로 다림질 가능 (180~210°C)"
+            },
+            iron_medium: {
+                svg: `<svg viewBox="0 0 100 100"><path d="M15 85 L15 35 L50 10 L85 35 L85 85 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M20 85 L80 85" fill="none" stroke="#333" stroke-width="5"/><circle cx="40" cy="65" r="5" fill="#333"/><circle cx="60" cy="65" r="5" fill="#333"/></svg>`,
+                desc: "중온으로 다림질 가능 (140~160°C)"
+            },
+            iron_low: {
+                svg: `<svg viewBox="0 0 100 100"><path d="M15 85 L15 35 L50 10 L85 35 L85 85 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M20 85 L80 85" fill="none" stroke="#333" stroke-width="5"/><circle cx="50" cy="65" r="5" fill="#333"/></svg>`,
+                desc: "저온으로 다림질 가능 (80~120°C)"
+            },
+            iron_none: {
+                svg: `<svg viewBox="0 0 100 100"><path d="M15 85 L15 35 L50 10 L85 35 L85 85 Z" fill="none" stroke="#333" stroke-width="5"/><path d="M20 85 L80 85" fill="none" stroke="#333" stroke-width="5"/><line x1="15" y1="15" x2="85" y2="85" stroke="#333" stroke-width="5"/><line x1="85" y1="15" x2="15" y2="85" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "다림질 금지"
+            },
+            // Dry Cleaning
+            dryclean_any: {
+                svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "드라이클리닝 가능"
+            },
+            dryclean_none: {
+                svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="#333" stroke-width="5"/><line x1="15" y1="15" x2="85" y2="85" stroke="#333" stroke-width="5"/><line x1="85" y1="15" x2="15" y2="85" stroke="#333" stroke-width="5"/></svg>`,
+                desc: "드라이클리닝 금지"
+            }
+        };
+
+        const generateBtn = document.getElementById('generateBtn');
+        const careSymbolsDiv = document.getElementById('careSymbols');
+        const careExplanationsUl = document.getElementById('careExplanations');
+        const outputSection = document.getElementById('outputSection');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewImg = imagePreview.querySelector('img');
+
+        // Event listener for image upload to show preview
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreviewImg.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.classList.add('hidden');
+                imagePreviewImg.src = '';
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const selectedMaterials = Array.from(document.querySelectorAll('input[name="material"]:checked')).map(cb => cb.value);
+            const description = document.getElementById('description').value.toLowerCase();
+
+            let recommendedSymbols = new Set();
+            let explanations = new Set();
+
+            // Apply rules based on selected materials
+            if (selectedMaterials.includes('cotton')) {
+                recommendedSymbols.add('wash_machine_40');
+                recommendedSymbols.add('bleach_any');
+                recommendedSymbols.add('dry_tumble_normal');
+                recommendedSymbols.add('iron_medium');
+                recommendedSymbols.add('dryclean_any'); // Cotton can often be dry cleaned
+            }
+            if (selectedMaterials.includes('polyester')) {
+                recommendedSymbols.add('wash_machine_30');
+                recommendedSymbols.add('bleach_non_chlorine');
+                recommendedSymbols.add('dry_tumble_low');
+                recommendedSymbols.add('iron_low');
+                recommendedSymbols.add('dryclean_any');
+            }
+            if (selectedMaterials.includes('wool_silk')) {
+                recommendedSymbols.add('wash_hand');
+                recommendedSymbols.add('bleach_none');
+                recommendedSymbols.add('dry_flat');
+                recommendedSymbols.add('dry_tumble_none');
+                recommendedSymbols.add('iron_low'); // or steam, low heat
+                recommendedSymbols.add('dryclean_any'); // Often recommended for wool/silk
+            }
+            if (selectedMaterials.includes('delicate')) {
+                recommendedSymbols.add('wash_hand');
+                recommendedSymbols.add('bleach_none');
+                recommendedSymbols.add('dry_line'); // or dry_flat
+                recommendedSymbols.add('dry_tumble_none');
+                recommendedSymbols.add('iron_none'); // or iron_low if absolutely necessary
+                recommendedSymbols.add('dryclean_any'); // Often recommended for delicate items
+            }
+
+            // Refine based on description (simple keyword matching)
+            if (description.includes('밝은 색상') || description.includes('흰색')) {
+                // No specific change for bleach_any, but good to note
+            }
+            if (description.includes('어두운 색상') || description.includes('색깔 옷')) {
+                recommendedSymbols.delete('bleach_any'); // Avoid full bleach for colored clothes
+                recommendedSymbols.add('bleach_non_chlorine');
+            }
+            if (description.includes('장식') || description.includes('비즈') || description.includes('자수')) {
+                recommendedSymbols.add('wash_hand'); // Prefer hand wash
+                recommendedSymbols.delete('wash_machine_40');
+                recommendedSymbols.delete('wash_machine_30');
+                recommendedSymbols.add('iron_none'); // Avoid ironing directly on embellishments
+                recommendedSymbols.delete('iron_low');
+                recommendedSymbols.delete('iron_medium');
+                recommendedSymbols.delete('iron_high');
+            }
+            if (description.includes('기능성') || description.includes('방수') || description.includes('발수')) {
+                recommendedSymbols.add('wash_machine_30'); // Often cold wash
+                recommendedSymbols.delete('wash_machine_40');
+                recommendedSymbols.add('bleach_none'); // Avoid bleach for functional fabrics
+                recommendedSymbols.add('dry_line'); // Air dry often recommended
+                recommendedSymbols.delete('dry_tumble_normal');
+                recommendedSymbols.delete('dry_tumble_low');
+                recommendedSymbols.add('iron_low'); // Low heat or no iron
+            }
+
+            // Ensure essential symbols are present if no material is selected but description exists
+            if (selectedMaterials.length === 0 && description.trim() !== '') {
+                // Default safe options if no material is chosen but description is present
+                if (!recommendedSymbols.has('wash_hand') && !recommendedSymbols.has('wash_machine_30')) {
+                    recommendedSymbols.add('wash_machine_30'); // Default to gentle machine wash
+                }
+                if (!recommendedSymbols.has('bleach_none')) {
+                    recommendedSymbols.add('bleach_non_chlorine'); // Default to non-chlorine
+                }
+                if (!recommendedSymbols.has('dry_tumble_low') && !recommendedSymbols.has('dry_line')) {
+                    recommendedSymbols.add('dry_line'); // Default to line dry
+                }
+                if (!recommendedSymbols.has('iron_low') && !recommendedSymbols.has('iron_none')) {
+                    recommendedSymbols.add('iron_low'); // Default to low iron
+                }
+                if (!recommendedSymbols.has('dryclean_any') && !recommendedSymbols.has('dryclean_none')) {
+                    recommendedSymbols.add('dryclean_any'); // Default to dry clean possible
+                }
+            } else if (selectedMaterials.length === 0 && description.trim() === '') {
+                // If nothing is selected, provide a basic set
+                recommendedSymbols.add('wash_machine_30');
+                recommendedSymbols.add('bleach_non_chlorine');
+                recommendedSymbols.add('dry_tumble_low');
+                recommendedSymbols.add('iron_low');
+                recommendedSymbols.add('dryclean_any');
+            }
+
+
+            // Clear previous results
+            careSymbolsDiv.innerHTML = '';
+            careExplanationsUl.innerHTML = '';
+
+            // Display symbols and explanations
+            if (recommendedSymbols.size > 0) {
+                Array.from(recommendedSymbols).forEach(key => {
+                    const symbolData = careSymbols[key];
+                    if (symbolData) {
+                        const div = document.createElement('div');
+                        div.className = 'care-icon flex flex-col items-center justify-center p-2 bg-gray-50 rounded-lg border border-gray-200 shadow-sm';
+                        div.innerHTML = symbolData.svg;
+                        careSymbolsDiv.appendChild(div);
+
+                        const li = document.createElement('li');
+                        li.textContent = symbolData.desc;
+                        careExplanationsUl.appendChild(li);
+                    }
+                });
+                outputSection.classList.remove('hidden');
+            } else {
+                outputSection.classList.add('hidden');
+                // Optionally display a message if no symbols are generated
+                const li = document.createElement('li');
+                li.textContent = '선택된 정보에 해당하는 취급표시를 찾을 수 없습니다. 다른 정보를 입력해보세요.';
+                careExplanationsUl.appendChild(li);
+                outputSection.classList.remove('hidden'); // Show the section to display this message
+            }
+        });
+    </script>
+</body>
+</html>
